@@ -150,10 +150,13 @@ begin
               
               if Gaps.Count > 0 then
               begin
-                if (ClassInfo.TheClassName <> '') and (ClassInfo.TheClassName <> 'Global') then
+                // Use METH: for class methods, FUNC: for standalone functions.
+                // We treat it as a standalone function if it's in 'Global' or if ClassName == ProcName (with 1 method).
+                if (ClassInfo.TheClassName <> '') and (ClassInfo.TheClassName <> 'Global') and 
+                   ((ClassInfo.TheClassName <> ProcInfo.Name) or (ClassInfo.ProcedureCount > 1)) then
                   CCGFile.Add('  METH: ' + IntToStr(MinLine) + '-' + IntToStr(MaxLine) + ' ' + ClassInfo.TheClassName + '.' + ProcInfo.Name)
                 else
-                  CCGFile.Add('  METH: ' + IntToStr(MinLine) + '-' + IntToStr(MaxLine) + ' ' + ProcInfo.Name);
+                  CCGFile.Add('  FUNC: ' + IntToStr(MinLine) + '-' + IntToStr(MaxLine) + ' ' + ProcInfo.Name);
                 CCGFile.Add('    GAPS: ' + CompressGaps(Gaps));
               end;
             end;
