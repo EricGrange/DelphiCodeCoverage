@@ -153,6 +153,7 @@ uses
   System.Masks,
   Xml.XMLDoc,
   JclFileUtils,
+  UnitNameHelper,
   LoggerTextFile,
   LoggerAPI;
 
@@ -432,27 +433,23 @@ end;
 
 function TCoverageConfiguration.IsPathInExclusionList(const APath: TFileName): Boolean;
 var
-  Mask: string;
   IsIncluded: boolean;
 begin
-  Result := False;
   // if inclusion list is empty, everything is included
-  IsIncluded := true;
-  // first check if present in inclusion list 
-  for Mask in FIncludeSourceMaskLst do
+  if (FIncludeSourceMaskLst.Count = 0) then
+    IsIncluded := True
+  else
   begin
-    IsIncluded := MatchesMask(APath, Mask);
-    if IsIncluded then
-      break;
+    // first check if present in inclusion list
+    IsIncluded := MatchesAnyMask(APath, FIncludeSourceMaskLst)
+               or MatchesAnyMask(ExtractFileName(APath), FIncludeSourceMaskLst);
   end;
+
   if not IsIncluded then
     Exit(True);
 
-  for Mask in FExcludeSourceMaskLst do
-  begin
-    if MatchesMask(APath, Mask) then
-      Exit(True);
-  end;
+  Result := MatchesAnyMask(APath, FExcludeSourceMaskLst)
+         or MatchesAnyMask(ExtractFileName(APath), FExcludeSourceMaskLst);
 end;
 
 function TCoverageConfiguration.JacocoOutput: Boolean;
@@ -544,7 +541,7 @@ begin
       NewUnitsList.Add(CurrentUnit);
 
     for CurrentUnit in FDProjUnitsLst do
-      NewUnitsList.Add(ChangeFileExt(ExtractFileName(CurrentUnit), ''));
+      NewUnitsList.Add(ExtractFileName(StripDelphiExtension(CurrentUnit)));
 
     FUnitsStrLst.Clear;
     for CurrentUnit in NewUnitsList do
@@ -722,7 +719,7 @@ begin
     while UnitString <> '' do
     begin
       if FStripFileExtension then
-        UnitString := PathRemoveExtension(UnitString); // Ensures that we strip out .pas if it was added for some reason
+        UnitString := StripDelphiExtension(UnitString); // Ensures that we strip out .pas if it was added for some reason
       AddUnitString(UnitString);
 
       Inc(AParameter);
@@ -819,7 +816,7 @@ begin
       ReadLn(InputFile, UnitLine);
       // Ensures that we strip out .pas if it was added for some reason
       if FStripFileExtension then
-        UnitLine := PathExtractFileNameNoExt(UnitLine);
+        UnitLine := StripDelphiExtension(UnitLine);
 
       AddUnitString(UnitLine);
     end;

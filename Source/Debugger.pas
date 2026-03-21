@@ -130,6 +130,7 @@ uses
   EmmaCoverageFileUnit,
   JacocoCoverageFileUnit,
   DebugModule,
+  UnitNameHelper,
   JclMapScannerHelper,
   JclFileUtils,
   System.Types;
@@ -736,7 +737,7 @@ begin
             if AUnitNameSpace.HasUnit(ModuleName) then
             begin
               UnitNameSpace := AUnitNameSpace.ModuleName;
-              UnitNameSpace := ChangeFileExt(UnitNameSpace, '');
+              UnitNameSpace := StripDelphiExtension(UnitNameSpace);
               UnitNameSpace := UnitNameSpace + '.';
             end
             else
@@ -754,11 +755,11 @@ begin
             UnitName := AMapScanner.MapStringToSourceFile(MapLineNumber.UnitName);
             if ExtractFileExt(UnitName) = '' then
               UnitName := ChangeFileExt(UnitName, '.pas');
-            UnitModuleName := ExtractFileName(ChangeFileExt(UnitName, ''));
+            UnitModuleName := ExtractFileName(StripDelphiExtension(UnitName));
 
-            if (AModuleList.IndexOf(UnitModuleName) > -1)
-            and (AModuleList.IndexOf(ModuleName) > -1)
-            and (AExcludedModuleList.IndexOf(UnitModuleName) < 0) then
+            if MatchesAnyMask(UnitModuleName, AModuleList)
+            and MatchesAnyMask(ModuleName, AModuleList)
+            and (not MatchesAnyMask(UnitModuleName, AExcludedModuleList)) then
             begin
               QualifiedModuleName := Prefix + UnitNameSpace + ModuleName;
               QualifiedProcName := AMapScanner.ProcNameFromAddr(MapLineNumber.VA);
@@ -855,7 +856,9 @@ var
   ImageName: array [0 .. MAX_PATH] of Char;
 begin
   Result := '';
+{$WARN SYMBOL_PLATFORM OFF}
   if GetFinalPathNameByHandle(ADLLHandle, ImageName, Length(ImageName), 0) > 0 then
+{$WARN SYMBOL_PLATFORM ON}
   begin
     Result := string(ImageName);
   end

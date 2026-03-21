@@ -82,6 +82,7 @@ uses
   System.SysUtils,
   System.Generics.Collections,
   JclFileUtils,
+  UnitNameHelper,
   I_BreakPoint,
   BreakPoint;
 
