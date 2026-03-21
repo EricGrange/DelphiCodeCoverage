@@ -310,7 +310,7 @@ begin
   ConsoleOutput(I_CoverageConfiguration.cPARAMETER_JACOCO +
     '          -- Output jacoco coverage XML file in the output directory');
   ConsoleOutput(I_CoverageConfiguration.cPARAMETER_CCG_OUTPUT +
-    '           -- Output Compact Coverage Gaps (.ccg) report in the output directory');
+    '           -- Output token-optimized Compact Coverage Gaps (.ccg) report for AI agents/LLMs');
 
 end;
 
