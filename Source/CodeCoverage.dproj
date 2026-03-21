@@ -161,6 +161,7 @@
         <DCCReference Include="LoggerTextFile.pas"/>
         <DCCReference Include="LogManager.pas"/>
         <DCCReference Include="XMLCoverageReport.pas"/>
+        <DCCReference Include="CCGCoverageReport.pas"/>
         <DCCReference Include="ClassInfoUnit.pas"/>
         <DCCReference Include="EmmaCoverageData.pas"/>
         <DCCReference Include="EmmaDataFile.pas"/>

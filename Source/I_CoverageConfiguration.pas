@@ -44,6 +44,7 @@ type
     function XmlLines: Boolean;
     function XmlMergeGenerics: Boolean;
     function HtmlOutput: Boolean;
+    function CcgOutput: Boolean;
     function TestExeExitCode: Boolean;
     function UseTestExePathAsWorkingDir: Boolean;
     function ModuleNameSpace(const AModuleName: string): TModuleNameSpace;
@@ -76,6 +77,7 @@ const
   cPARAMETER_XML_LINES = '-xmllines';
   cPARAMETER_XML_LINES_MERGE_GENERICS = '-xmlgenerics';
   cPARAMETER_HTML_OUTPUT = '-html';
+  cPARAMETER_CCG_OUTPUT = '-ccg';
   cPARAMETER_DPROJ = '-dproj';
   cPARAMETER_DGROUPPROJ = '-dgroupproj';
   cPARAMETER_EXCLUDE_SOURCE_MASK = '-esm';
