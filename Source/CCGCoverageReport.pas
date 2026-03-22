@@ -41,7 +41,9 @@ implementation
 uses
   System.Math,
   JclFileUtils,
-  CoverageStats;
+  CoverageStats,
+  uConsoleOutput,
+  UnitNameHelper;
 
 constructor TCCGCoverageReport.Create(const ACoverageConfiguration: ICoverageConfiguration);
 begin
@@ -97,9 +99,8 @@ var
   MinLine, MaxLine: Integer;
   TotalLines, CoveredLines: Integer;
   ProjectName: string;
+  SourcePath: string;
 begin
-  ALogManager.Log('Generating CCG coverage report');
-  
   ProjectName := ExtractFileName(FCoverageConfiguration.ExeFileName);
   if ProjectName = '' then
     ProjectName := ExtractFileName(FCoverageConfiguration.MapFileName);
@@ -124,7 +125,8 @@ begin
       // Omit units with 100% coverage
       if CoveredLines < TotalLines then
       begin
-        CCGFile.Add('UNIT: ' + ModuleInfo.ModuleName + ' | ' + ModuleInfo.ModuleFileName);
+        SourcePath := FindSourceFile(ModuleInfo.ModuleFileName, FCoverageConfiguration.SourcePaths);
+        CCGFile.Add('UNIT: ' + ModuleInfo.ModuleName + ' | ' + SourcePath);
         CCGFile.Add('  COVERAGE: ' + FloatToStrF(CoveredLines * 100 / TotalLines, ffFixed, 7, 1) + '% (' + IntToStr(CoveredLines) + '/' + IntToStr(TotalLines) + ' lines)');
         CCGFile.Add('');
         

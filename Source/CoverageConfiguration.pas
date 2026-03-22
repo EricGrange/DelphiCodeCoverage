@@ -405,7 +405,7 @@ end;
 
 function TCoverageConfiguration.XmlOutput: Boolean;
 begin
-  Result := FXmlOutput or not FHtmlOutput;
+  Result := FXmlOutput;
 end;
 
 function TCoverageConfiguration.XmlLines: Boolean;

@@ -15,6 +15,7 @@ interface
 uses
   Winapi.Windows,
   System.Classes,
+  System.Math,
   JclDebug,
   JwaWinBase,
   JwaWinType,
@@ -405,16 +406,20 @@ begin
 
   FCoverageStats.Calculate;
 
+  ConsoleOutput('Generating reports');
+  ConsoleOutput('DEBUG: GenerateReport HtmlOutput=' + BoolToStr(FCoverageConfiguration.HtmlOutput, True));
   FLogManager.Log('Generating reports');
 
   if (FCoverageConfiguration.HtmlOutput) then
   begin
+    ConsoleOutput('Generating html report');
     CoverageReport := THTMLCoverageReport.Create(FCoverageConfiguration);
     CoverageReport.Generate(FCoverageStats, FModuleList, FLogManager);
   end;
 
   if (FCoverageConfiguration.XmlOutput) then
   begin
+    ConsoleOutput('Generating xml report');
     CoverageReport := TXMLCoverageReport.Create(FCoverageConfiguration);
     CoverageReport.Generate(FCoverageStats, FModuleList,FLogManager);
   end;
@@ -433,6 +438,7 @@ begin
 
   if (FCoverageConfiguration.CcgOutput) then
   begin
+    ConsoleOutput('Generating CCG coverage report');
     CoverageReport := TCCGCoverageReport.Create(FCoverageConfiguration);
     CoverageReport.Generate(FCoverageStats, FModuleList, FLogManager);
   end;
@@ -483,12 +489,14 @@ begin
 end;
 
 procedure TDebugger.PrintSummary;
+
   function PadString(const AString: string): string;
   begin
     Result := AString + ' ';
     while Length(Result) < 11 do
       Result := ' ' + Result;
   end;
+
 begin
   ConsoleOutput('');
   ConsoleOutput('Summary:');
@@ -496,13 +504,14 @@ begin
   ConsoleOutput('+-----------+-----------+-----------+');
   ConsoleOutput('|   Lines   |  Covered  | Covered % |');
   ConsoleOutput('+-----------+-----------+-----------+');
+  var percent := 100*FCoverageStats.CoveredLineCount / Max(FCoverageStats.LineCount, 1);
   ConsoleOutput(
     Format(
       '|%s|%s|%s|',
       [
         PadString(IntToStr(FCoverageStats.LineCount)),
         PadString(IntToStr(FCoverageStats.CoveredLineCount)),
-        PadString(IntToStr(FCoverageStats.PercentCovered) + ' %')
+        PadString(FormatFloat('0.00 %', percent))
       ]
     )
   );
@@ -525,6 +534,19 @@ begin
           GenerateReport;
           VerboseOutput('Finished generating reports');
           PrintSummary;
+
+          if (FCoverageConfiguration.CcgOutput) then
+          begin
+            ConsoleOutput('');
+            ConsoleOutput('CCG report: ' + PathAppend(FCoverageConfiguration.OutputDir, 'CodeCoverage_Gaps.ccg') + ' is available for AI analysis');
+          end;
+
+          if (FCoverageConfiguration.HtmlOutput) then
+          begin
+            ConsoleOutput('');
+            ConsoleOutput('Coverage report generated in ' + FCoverageConfiguration.OutputDir);
+            ConsoleOutput('Open ' + PathAppend(FCoverageConfiguration.OutputDir, 'CodeCoverage_Summary.html') + ' to view results.');
+          end;
         end
         else
         begin
@@ -727,7 +749,7 @@ begin
       SkippedClassNames.Sorted := True;
       SkippedClassNames.Duplicates := dupIgnore;
 
-      FLogManager.Log('Adding breakpoints for module:' + AModule.Name);
+      VerboseOutput('Adding breakpoints for module:' + AModule.Name);
 
       if FBreakPointList.Count = 0 then
         FBreakPointList.SetCapacity(AMapScanner.LineNumbersCnt); // over kill!
@@ -774,12 +796,12 @@ begin
               QualifiedProcName := AMapScanner.ProcNameFromAddr(MapLineNumber.VA);
               TheClassName := TModuleList.GetClassName(QualifiedModuleName, QualifiedProcName);
               if IsClassExcluded(TheClassName) then begin
-                FLogManager.Log('NOT ADDING BREAKPOINT FOR "' + QualifiedProcName
+                VerboseOutput('NOT ADDING BREAKPOINT FOR "' + QualifiedProcName
                  + '" in EXCLUDED class "' + TheClassName + '" in "' + QualifiedModuleName + '".');
                 SkippedClassNames.Add(TheClassName);
               end
               else begin
-                FLogManager.Log(
+                VerboseOutput(
                   'Setting BreakPoint for module: ' + ModuleName +
                   ' unit ' + UnitName +
                   ' moduleName: ' + ModuleName +

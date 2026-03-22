@@ -132,6 +132,9 @@
         <DCC_DcuOutput>C:\Delphi\DCUs\Win64\</DCC_DcuOutput>
         <AppDPIAwarenessMode>none</AppDPIAwarenessMode>
         <DCC_ExeOutput>C:\Delphi\mpir-delphi\</DCC_ExeOutput>
+        <DCC_Optimize>true</DCC_Optimize>
+        <DCC_MapFile>0</DCC_MapFile>
+        <DCC_DebugInfoInExe>false</DCC_DebugInfoInExe>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -161,7 +164,6 @@
         <DCCReference Include="LoggerTextFile.pas"/>
         <DCCReference Include="LogManager.pas"/>
         <DCCReference Include="XMLCoverageReport.pas"/>
-        <DCCReference Include="CCGCoverageReport.pas"/>
         <DCCReference Include="ClassInfoUnit.pas"/>
         <DCCReference Include="EmmaCoverageData.pas"/>
         <DCCReference Include="EmmaDataFile.pas"/>

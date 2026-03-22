@@ -7,12 +7,15 @@ uses
 
 function StripDelphiExtension(const AFileName: string): string;
 function MatchesAnyMask(const AString: string; AMasks: TStrings): Boolean;
+function FindSourceFile(const AFileName: string; const ASourcePaths: TStrings): string;
 
 implementation
 
 uses
   System.SysUtils,
-  System.Masks;
+  System.IOUtils,
+  System.Masks,
+  JclFileUtils;
 
 function StripDelphiExtension(const AFileName: string): string;
 var
@@ -41,6 +44,52 @@ begin
       Break;
     end;
   end;
+end;
+
+function FindSourceFile(const AFileName: string; const ASourcePaths: TStrings): string;
+var
+  SourcePath: string;
+  FoundFiles: TArray<string>;
+begin
+  Result := AFileName;
+  if (AFileName = '') or not Assigned(ASourcePaths) then
+    Exit;
+
+  // 1. Direct check in each source path
+  for SourcePath in ASourcePaths do
+  begin
+    if SourcePath = '' then
+      Result := AFileName
+    else
+      Result := PathAppend(SourcePath, AFileName);
+
+    if FileExists(Result) then
+    begin
+      Result := TPath.GetFullPath(Result);
+      Exit;
+    end;
+  end;
+
+  // 2. Recursive search in each source path
+  for SourcePath in ASourcePaths do
+  begin
+    if (SourcePath <> '') and DirectoryExists(SourcePath) then
+    begin
+      try
+        FoundFiles := TDirectory.GetFiles(SourcePath, AFileName, TSearchOption.soAllDirectories);
+        if Length(FoundFiles) > 0 then
+        begin
+          Result := TPath.GetFullPath(FoundFiles[0]);
+          Exit;
+        end;
+      except
+        // Ignore directory access errors
+      end;
+    end;
+  end;
+
+  // 3. Fallback to original filename
+  Result := AFileName;
 end;
 
 end.

@@ -57,7 +57,8 @@ uses
   System.SysUtils,
   System.Math,
   JclFileUtils,
-  Generics.Collections, CoverageStats;
+  Generics.Collections, CoverageStats,
+  uConsoleOutput;
 
 constructor TJacocoCoverageReport.Create(const ACoverageConfiguration: ICoverageConfiguration);
 begin
@@ -94,6 +95,7 @@ var
   XML: TJclSimpleXML;
   SessionElement: TJclSimpleXMLElem;
 begin
+  ConsoleOutput('Generating jacoco report');
   ALogManager.Log('Generating jacoco xml report');
 
   XML := TJclSimpleXML.Create;

@@ -84,7 +84,8 @@ uses
   JclFileUtils,
   UnitNameHelper,
   I_BreakPoint,
-  BreakPoint;
+  BreakPoint,
+  uConsoleOutput;
 
 constructor TEmmaCoverageFile.Create(
   const ACoverageConfiguration: ICoverageConfiguration);
@@ -104,6 +105,7 @@ var
 begin
   FLogManager := ALogManager;
   try
+    ConsoleOutput('Generating emma report');
     FLogManager.Log('Generating EMMA file');
 
     MetaData := TEmmaMetaData.Create(IfThen(FCoverageConfiguration.EmmaOutput21, EmmaVersion21, EmmaVersion20));

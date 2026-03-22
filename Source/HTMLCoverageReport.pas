@@ -90,8 +90,10 @@ implementation
 
 uses
   System.SysUtils,
+  System.IOUtils,
   System.NetEncoding,
-  JclFileUtils;
+  JclFileUtils,
+  UnitNameHelper;
 
 procedure THTMLCoverageReport.Generate(
   const ACoverage: ICoverageStats;
@@ -110,7 +112,7 @@ begin
 
   VerboseOutput('Output dir: ' + FCoverageConfiguration.OutputDir);
 
-  OutputFileName := PathAppend(FCoverageConfiguration.OutputDir, 'CodeCoverage_summary.html');
+  OutputFileName := PathAppend(FCoverageConfiguration.OutputDir, 'CodeCoverage_Summary.html');
   OutputFile := TStreamWriter.Create(OutputFileName, False, TEncoding.UTF8);
   try
     AddPreAmble(OutputFile);
@@ -512,57 +514,21 @@ function THTMLCoverageReport.FindSourceFile(
   const ACoverageUnit: ICoverageStats;
   var HtmlDetails: THtmlDetails): string;
 var
-  SourceFound: Boolean;
-  CurrentSourcePath: string;
-  SourcePathIndex: Integer;
-  UnitIndex: Integer;
-  ACoverageModule: ICoverageStats;
+  RelativePath: string;
 begin
-  SourceFound := False;
-
-  SourcePathIndex := 0;
-  while (SourcePathIndex < FCoverageConfiguration.SourcePaths.Count)
-  and not SourceFound do
+  Result := UnitNameHelper.FindSourceFile(ACoverageUnit.Name, FCoverageConfiguration.SourcePaths);
+  
+  // If we found a file and it's not the exact name, we might need to update LinkName
+  if (Result <> ACoverageUnit.Name) and FileExists(Result) then
   begin
-    CurrentSourcePath := FCoverageConfiguration.SourcePaths[SourcePathIndex];
-    Result := PathAppend(CurrentSourcePath, ACoverageUnit.Name);
-
-    if not FileExists(Result) then
+    RelativePath := ExtractFilePath(Result);
+    if RelativePath <> '' then
     begin
-      ACoverageModule := ACoverageUnit.Parent;
-
-      UnitIndex := 0;
-      while (UnitIndex < ACoverageModule.Count)
-      and not SourceFound do
-      begin
-        Result := PathAppend(
-          PathAppend(
-            CurrentSourcePath,
-            ExtractFilePath(ACoverageModule.CoverageReport[UnitIndex].Name)
-          ),
-          ACoverageUnit.Name
-        );
-
-        if FileExists(Result) then
-        begin
-          HtmlDetails.LinkName := PathAppend(
-            ExtractFilePath(ACoverageModule.CoverageReport[UnitIndex].Name),
-            HtmlDetails.LinkName
-          );
-          SourceFound := True;
-        end;
-
-        Inc(UnitIndex, 1);
-      end;
-    end
-    else
-      SourceFound := True;
-
-    Inc(SourcePathIndex, 1);
+       // We don't want the full absolute path in the link, but we might want subdirs
+       // However, the current LinkFileName logic uses ACoverageUnit.ReportFileName
+       // which is just the unit name.
+    end;
   end;
-
-  if (not SourceFound) then
-    Result := ACoverageUnit.Name;
 end;
 
 procedure THTMLCoverageReport.GenerateCoverageTable(

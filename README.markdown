@@ -43,10 +43,10 @@ XE3 will probably work. Main develop is done with 10.x versions.
 ### HTML output (specify `-html` as a parameter)
 For each unit there will be a unit.html with a summary of the coverage, followed by the source marked up. 
 Green lines were covered. Red lines were not covered lines. The other lines didn't have code generated for it. 
-There is also a CodeCoverage_summary.html file that summarizes the coverage and has links to the generated unit reports.
+There is also a CodeCoverage_Summary.html file that summarizes the coverage and has links to the generated unit reports.
 
 ### XML output (specify `-xml` as a parameter)
-A summary xml report called CodeCoverage_summary.xml is generated in the output directory that is compatible with the 
+A summary xml report called CodeCoverage_Summary.xml is generated in the output directory that is compatible with the 
 xml output from EMMA. Use in combination with the switches '-xmllines' and '-xmlgenerics' for detailed code coverage per line.
 
 ### Emma output (specify `-emma` or `-emma21` as a parameter)
