@@ -112,7 +112,7 @@ begin
     // Part A: Global Header
     CCGFile.Add('PROJECT: ' + ProjectName);
     CCGFile.Add('TIMESTAMP: ' + FormatDateTime('yyyy-mm-dd"T"hh:nn:ss"Z"', Now));
-    CCGFile.Add('TOTAL_COVERAGE: ' + FloatToStrF(ACoverage.PercentCovered, ffFixed, 7, 1) + '%');
+    CCGFile.Add('TOTAL_COVERAGE: ' + FormatFloat('0.00', ACoverage.PercentCovered) + '%');
     CCGFile.Add('GLOBAL_STATS: ' + IntToStr(ACoverage.CoveredLineCount) + '/' + IntToStr(ACoverage.LineCount));
     CCGFile.Add('');
 
