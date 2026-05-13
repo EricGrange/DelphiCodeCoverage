@@ -35,7 +35,7 @@ type
 
     function LineCount: Integer;
     function CoveredLineCount: Integer;
-    function PercentCovered: Integer;
+    function PercentCovered: Double;
 
     property Name: string read GetName;
 
@@ -71,7 +71,7 @@ type
 
     function LineCount: Integer;
     function CoveredLineCount: Integer;
-    function PercentCovered: Integer;
+    function PercentCovered: Double;
 
     constructor Create(
       const AModuleName: string;
@@ -528,7 +528,7 @@ begin
   end;
 end;
 
-function TClassInfo.PercentCovered: Integer;
+function TClassInfo.PercentCovered: Double;
 var
   Total: Integer;
   Covered: Integer;
@@ -543,7 +543,10 @@ begin
     Covered := Covered + CurrentInfo.CoveredLineCount;
   end;
 
-  Result := Covered * 100 div Total;
+  if Total = 0 then
+    Result := 0
+  else
+    Result := Covered * 100 / Total;
 end;
 
 function TClassInfo.GetModule: string;
@@ -697,9 +700,12 @@ begin
   end;
 end;
 
-function TProcedureInfo.PercentCovered: Integer;
+function TProcedureInfo.PercentCovered: Double;
 begin
-  Result := (100 * CoveredLineCount) div LineCount;
+  if LineCount = 0 then
+    Result := 0
+  else
+    Result := (100 * CoveredLineCount) / LineCount;
 end;
 
 function TProcedureInfo.GetName: string;

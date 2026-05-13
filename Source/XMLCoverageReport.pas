@@ -127,7 +127,7 @@ begin
     AddValueElement('totallines', ACoverage.LineCount);
     AddValueElement('coveredlines', ACoverage.CoveredLineCount);
 
-    AddValueElement('coveredpercent', ACoverage.PercentCovered);
+    AddValueElement('coveredpercent', Round(ACoverage.PercentCovered));
 
     DataElement := XML.Root.Items.Add('data');
     AllElement := DataElement.Items.Add('all');

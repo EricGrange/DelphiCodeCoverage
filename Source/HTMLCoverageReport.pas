@@ -305,7 +305,7 @@ begin
 
     SetPrePostLink(HtmlDetails, PreLink, PostLink);
 
-    PercentCovered := IntToStr(CurrentStats.PercentCovered) + '%';
+    PercentCovered := IntToStr(Round(CurrentStats.PercentCovered)) + '%';
 
     AOutputFile.WriteLine(
       '<tr>' +
@@ -438,7 +438,7 @@ var
 begin
   AOutFile.WriteLine('<p>Statistics for ' + ASourceFileName + '</p>');
 
-  percent := IntToStr(ACoverageBase.PercentCovered) + '%';
+  percent := IntToStr(Round(ACoverageBase.PercentCovered)) + '%';
 
   AOutFile.WriteLine(
     '<table class="' + OverviewClass + '">'

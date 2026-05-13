@@ -24,7 +24,7 @@ type
     FParent: Pointer;
 
     FLineCount: Integer;
-    FPercentCovered: Integer;
+    FPercentCovered: Double;
     FCoveredLineCount: Integer;
 
     FCoverageLineCount: Integer;
@@ -45,7 +45,7 @@ type
 
     function CoveredLineCount: Integer;
     function LineCount: Integer;
-    function PercentCovered: Integer;
+    function PercentCovered: Double;
 
     function Count: Integer;
     function GetCoverageReportByIndex(const AIndex: Integer): ICoverageStats;
@@ -226,7 +226,7 @@ begin
   Result := FLineCount;
 end;
 
-function TCoverageStats.PercentCovered: Integer;
+function TCoverageStats.PercentCovered: Double;
 begin
   Result := FPercentCovered;
 end;
@@ -266,7 +266,7 @@ end;
 
 procedure TCoverageStats.UpdatePercentCovered;
 begin
-  FPercentCovered := FCoveredLineCount * 100 div FLineCount;
+  FPercentCovered := FCoveredLineCount * 100 / FLineCount;
 end;
 
 procedure TCoverageStats.UpdateLineCapacity;

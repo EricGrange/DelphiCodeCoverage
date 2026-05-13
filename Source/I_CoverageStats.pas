@@ -26,7 +26,7 @@ type
 
     function CoveredLineCount: Integer;
     function LineCount: Integer;
-    function PercentCovered: Integer;
+    function PercentCovered: Double;
 
     function Parent: ICoverageStats;
     function Count: Integer;
