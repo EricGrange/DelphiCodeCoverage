@@ -823,9 +823,15 @@ begin
     while not Eof(InputFile) do
     begin
       ReadLn(InputFile, UnitLine);
-      // Ensures that we strip out .pas if it was added for some reason
+      // Ensures that we strip out .pas if it was added for some reason, and the directory of a full path,
+      // keeping a leading exclusion prefix
       if FStripFileExtension then
-        UnitLine := StripDelphiExtension(UnitLine);
+      begin
+        if StartsStr(cIGNORE_UNIT_PREFIX, UnitLine) then
+          UnitLine := cIGNORE_UNIT_PREFIX + ExtractFileName(StripDelphiExtension(Copy(UnitLine, 2, MaxInt)))
+        else
+          UnitLine := ExtractFileName(StripDelphiExtension(UnitLine));
+      end;
 
       AddUnitString(UnitLine);
     end;
