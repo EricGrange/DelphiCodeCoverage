@@ -61,6 +61,7 @@ type
     procedure TestUnitFileNoExistingFile;
     procedure TestUnitFile;
     procedure TestUnitFileStrippingOfPathAndExtensions;
+    procedure TestUnitFileFullPaths;
 
     procedure TestUnitError;
     procedure TestUnitSingle;
@@ -757,6 +758,46 @@ begin
   finally
     FreeAndNil(LFileNameList);
     FreeAndNil(LFileNameListWithExt);
+  end;
+end;
+
+//==============================================================================
+procedure TCoverageConfigurationTest.TestUnitFileFullPaths;
+var
+  LCoverageConfiguration : ICoverageConfiguration;
+  LCmdParams             : array of string;
+  LFileListFileName      : string;
+  LUnitLines             : TStrings;
+begin
+  LUnitLines := TStringList.Create;
+  try
+    LUnitLines.Add(IncludeTrailingPathDelimiter(GetCurrentDir) + 'KeptUnit.pas');
+    LUnitLines.Add(I_CoverageConfiguration.cIGNORE_UNIT_PREFIX + IncludeTrailingPathDelimiter(GetCurrentDir) + 'DroppedUnit.pas');
+
+    repeat
+      LFileListFileName := RandomFileName();
+    until not FileExists(LFileListFileName);
+
+    try
+      LUnitLines.SaveToFile(LFileListFileName);
+
+      SetLength(LCmdParams, 2);
+      LCmdParams[Low(LCmdParams)]     := I_CoverageConfiguration.cPARAMETER_UNIT_FILE;
+      LCmdParams[Low(LCmdParams) + 1] := LFileListFileName;
+
+      LCoverageConfiguration := TCoverageConfiguration.Create(TMockCommandLineProvider.Create(LCmdParams));
+      LCoverageConfiguration.ParseCommandLine;
+
+      CheckEquals(1, LCoverageConfiguration.Units.Count, 'Incorrect number of units listed');
+      CheckEquals('KeptUnit', LCoverageConfiguration.Units[0], 'Directory not stripped from unit');
+      CheckEquals(1, LCoverageConfiguration.ExcludedUnits.Count, 'Incorrect number of excluded units listed');
+      CheckEquals('DroppedUnit', LCoverageConfiguration.ExcludedUnits[0], 'Directory not stripped from excluded unit');
+    finally
+      if FileExists(LFileListFileName) then
+        CheckTrue(SysUtils.DeleteFile(LFileListFileName), 'Unable to deleted unit file');
+    end;
+  finally
+    FreeAndNil(LUnitLines);
   end;
 end;
 
